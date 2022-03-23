@@ -1,0 +1,58 @@
+#! Copyright 2021 VMware, Inc.
+#! SPDX-License-Identifier: Apache-2.0
+
+#@ load("@ytt:data", "data")
+---
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  name: #@ "kpack-dependencies.community.tanzu.vmware.com." + data.values.version
+spec:
+  refName: kpack-dependencies.community.tanzu.vmware.com
+  version: #@ data.values.version
+  capacityRequirementsDescription: Registry with > 1GB available space
+  releaseNotes: ""
+  valuesSchema:
+    openAPIv3:
+      title: kpack.tanzu.vmware.com values schema
+      properties:
+        repository:
+          type: string
+          description: docker repository
+          examples:
+            - registry.io/kpack
+        repository_secret:
+          type: object
+          description: Secret reference for repository credentials. Mutually exclusive with repository_username/password. Requires Carvel secretgen-controller.
+          properties:
+            name:
+              description: Secret name for repsoitory credentials of type kubernetes.io/dockerconfigjson.
+              type: string
+            namespace:
+              description: Secret namespace for kp_default_repository credentials.
+              type: string
+        repository_username:
+          type: string
+          description: registry username
+          examples:
+            - janedoe@vmware.com
+        repository_password:
+          type: string
+          description: registry password
+          examples:
+            - password
+  template:
+    spec:
+      fetch:
+        - imgpkgBundle:
+            image: #@ data.values.bundle_image
+      template:
+        - ytt:
+            paths:
+              - "config/"
+        - kbld:
+            paths:
+              - "-"
+              - ".imgpkg/images.yml"
+      deploy:
+        - kapp: {}

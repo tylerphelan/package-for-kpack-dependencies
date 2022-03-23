@@ -1,0 +1,20 @@
+#! Copyright 2021 VMware, Inc.
+#! SPDX-License-Identifier: Apache-2.0
+
+#@data/values-schema
+#@overlay/match-child-defaults missing_ok=True
+---
+store_images:
+  - image: ""
+
+stacks:
+  - name: ""
+    buildImage: ""
+    runImage: ""
+
+builders:
+  - name: ""
+    stack: ""
+    order:
+      - group:
+        - id: ""

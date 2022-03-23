@@ -1,0 +1,22 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+
+#@ for builder in data.values.builders:
+---
+apiVersion: kpack.io/v1alpha2
+kind: ClusterBuilder
+metadata:
+  name: #@ builder.name
+spec:
+  serviceAccountRef:
+    name: #@ data.values.service_account.name
+    namespace: #@ data.values.service_account.namespace
+  tag: #@ "{}:clusterbuilder-{}".format(data.values.repository, builder.name)
+  stack:
+    name: #@ builder.stack
+    kind: ClusterStack
+  store:
+    name: default
+    kind: ClusterStore
+  order: #@ builder.order
+#@ end
