@@ -39,8 +39,7 @@ Notes: This is for deploying package to your own registry. For end users we prob
    
    ```bash
    cp -r config /tmp/package
-   cp <resourcedata values file> /tmp/package/config
-   kbld -f /tmp/package/config --imgpkg-lock-output /tmp/package/.imgpkg/images.yml
+   kbld -f <resourcedata values file> --imgpkg-lock-output /tmp/package/.imgpkg/images.yml > /tmp/package/config/values.yaml
    ```
    
 4. Push package image
