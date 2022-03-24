@@ -14,8 +14,10 @@ Notes: This is for deploying package to your own registry. For end users we prob
    
    stacks:
      - name: "base"
-       buildImage: "paketobuildpacks/build:base-cnb"
-       runImage: "paketobuildpacks/run:base-cnb"
+       build:
+         image: "paketobuildpacks/build:base-cnb"
+       run
+         image: "paketobuildpacks/run:base-cnb"
    
    builders:
      - name: "base"

@@ -9,8 +9,10 @@ store_images:
 
 stacks:
   - name: ""
-    buildImage: ""
-    runImage: ""
+    build:
+      image: ""
+    run:
+      image: ""
 
 builders:
   - name: ""

@@ -9,7 +9,7 @@ metadata:
 spec:
   id: "io.buildpacks.stacks.bionic"
   buildImage:
-    image: #@ stack.buildImage
+    image: #@ stack.build.image
   runImage:
-    image: #@ stack.runImage
+    image: #@ stack.run.image
 #@ end
