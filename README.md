@@ -4,7 +4,7 @@ Notes: This is for deploying package to your own registry. For end users we prob
 
 ### Create a new deps package
  
-1. Create a new resourcedata values file:
+1. Create a new values file:
    ```yaml
    #@data/values
    ---
@@ -39,7 +39,7 @@ Notes: This is for deploying package to your own registry. For end users we prob
    
    ```bash
    cp -r config /tmp/package
-   kbld -f <resourcedata values file> --imgpkg-lock-output /tmp/package/.imgpkg/images.yml > /tmp/package/config/values.yaml
+   kbld -f <values file> --imgpkg-lock-output /tmp/package/.imgpkg/images.yml > /tmp/package/config/values.yaml
    ```
    
 4. Push package image
