@@ -1,0 +1,19 @@
+#! Copyright 2021 VMware, Inc.
+#! SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: kapp.k14s.io/v1alpha1
+kind: Config
+minimumRequiredVersion: 0.29.0
+waitRules:
+  - supportsObservedGeneration: true
+    conditionMatchers:
+      - type: Ready
+        status: "False"
+        failure: true
+      - type: Ready
+        status: "True"
+        success: true
+    resourceMatchers:
+      - apiVersionKindMatcher: { apiVersion: kpack.io/v1alpha2, kind: ClusterStore }
+      - apiVersionKindMatcher: { apiVersion: kpack.io/v1alpha2, kind: ClusterStack }
+      - apiVersionKindMatcher: { apiVersion: kpack.io/v1alpha2, kind: ClusterBuilder }
