@@ -1,7 +1,5 @@
 # Package for kpack dependencies
 
-Notes: This is for deploying package to your own registry. For end users we probably want them to relocate the bundle
-
 ### Create a new deps package
  
 1. Create a new values file:
@@ -39,7 +37,8 @@ Notes: This is for deploying package to your own registry. For end users we prob
    
    ```bash
    cp -r config /tmp/package
-   kbld -f <values file> --imgpkg-lock-output /tmp/package/.imgpkg/images.yml > /tmp/package/config/values.yaml
+   cp <values file> /tmp/package/config
+   kbld -f <values file> --imgpkg-lock-output /tmp/package/.imgpkg/images.yml 
    ```
    
 4. Push package image
@@ -51,7 +50,7 @@ Notes: This is for deploying package to your own registry. For end users we prob
 5. Copy image reference from pushed_bundle.lock and use it to template package
 
    ```bash
-   ytt -f package.yaml -v bundle_image=<pushed bundle ref> -v version="dev" > templated-package.yaml
+   ytt -f package.yaml -v bundle_image=<pushed bundle ref> -v version="0.0.0" > templated-package.yaml
    ```
 
 ### Install the deps package
@@ -80,7 +79,7 @@ Notes: This is for deploying package to your own registry. For end users we prob
     values.yaml: |
       ---
       repository: <writeable repo for deps>
-      serviceAccount:
+      service_account:
         name: <name of service account with write secret for repo mounted>
         namespace: <namespace of service account with write secret for repo mounted>
    ```
@@ -100,7 +99,7 @@ Notes: This is for deploying package to your own registry. For end users we prob
      packageRef:
        refName: kpack-dependencies.community.tanzu.vmware.com
        versionSelection:
-         constraints: dev
+         constraints: 0.0.0
      values:
      - secretRef:
          name: kpack-deps-values
