@@ -1,0 +1,12 @@
+#@ load("/values.star", "secret_name")
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kpack-dependencies-service-account
+  namespace:  kpack
+imagePullSecrets:
+  - name: #@ secret_name
+secrets:
+  - name: #@ secret_name

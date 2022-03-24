@@ -79,10 +79,26 @@
     values.yaml: |
       ---
       repository: <writeable repo for deps>
-      service_account:
-        name: <name of service account with write secret for repo mounted>
-        namespace: <namespace of service account with write secret for repo mounted>
+      repsitory_secret:
+        name: <name of secret for repo>
+        namespace: <namespace of secret>
    ```
+   or
+   ```yaml
+   ---
+   apiVersion: v1
+   kind: Secret
+   metadata:
+    name: kpack-deps-values
+    namespace: default
+   stringData:
+    values.yaml: |
+      ---
+      repository: <writeable repo for deps>
+      repsitory_username: "username"
+      repsitory_password: "password"
+   ```
+   
 3. Create a file defining the package install
 
    ```yaml

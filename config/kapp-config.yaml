@@ -14,6 +14,4 @@ waitRules:
         status: "True"
         success: true
     resourceMatchers:
-      - apiVersionKindMatcher: { apiVersion: kpack.io/v1alpha2, kind: ClusterStore }
-      - apiVersionKindMatcher: { apiVersion: kpack.io/v1alpha2, kind: ClusterStack }
       - apiVersionKindMatcher: { apiVersion: kpack.io/v1alpha2, kind: ClusterBuilder }

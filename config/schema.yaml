@@ -5,6 +5,10 @@
 #@overlay/match-child-defaults missing_ok=True
 ---
 repository: ""
-service_account:
+
+repository_secret:
   name: ""
   namespace: ""
+
+repository_username: ""
+repository_password: ""
