@@ -1,56 +1,36 @@
 # Package for kpack dependencies
 
 ### Create a new deps package
- 
-1. Create a new values file:
-   ```yaml
-   #@data/values
-   ---
-   store_images:
-     - image: "gcr.io/paketo-buildpacks/java"
-     - image: "gcr.io/paketo-buildpacks/nodejs"
+
+1. Assemble bundle config. Example:
    
-   stacks:
-     - name: "base"
-       build:
-         image: "paketobuildpacks/build:base-cnb"
-       run
-         image: "paketobuildpacks/run:base-cnb"
-   
-   builders:
-     - name: "base"
-       stack: "base"
-       order:
-         - group:
-             - id: "paketo-buildpacks/java"
-         - group:
-             - id: "paketo-buildpacks/nodejs"
+   ```bash
+   cp -r bundle templated-bundle
+   ytt -f templated/ \
+     -v base_run_image=paketobuildpacks/run@sha256:bcab6379bf83f0657dab49f08c7da7f23a6b18145352b2e13178e35cf6bd39c1 \
+     -v base_build_image=paketobuildpacks/build@sha256:99afd42fd1730b16be0bbead05b51c1f926a501291d480c8ec17febdd0ccd244 \
+     --data-value-yaml store_images='
+     - gcr.io/paketo-buildpacks/java@sha256:8b0efb468411929005ddae01fdc9143f247f45f6de7a513dc7fab047fcb3e8a9
+     - gcr.io/paketo-buildpacks/java-native-image@sha256:409fd29a2ecdfa98d52a7023175ece3ae435b636cd2458ea2655490504753949
+     - gcr.io/paketo-buildpacks/nodejs@sha256:34813ead861ab5a6d98d45d244006e5122c47a7c0e714f524566fa916f2dd529
+     - gcr.io/paketo-buildpacks/go@sha256:077aeb6e0f3e4f648b935ef584d07028e3df894cdff3cbc68cdab1d42b57781c
+     - gcr.io/paketo-buildpacks/python@sha256:587f76bcf545d361703e46a99aac818216f3e664acde17c932a6975b2f1dde20
+     - gcr.io/paketo-buildpacks/dotnet-core@sha256:0e94d7990b625a2224a35207f66229aecd146b901d102a501d31f1aefd85cff5
+     - gcr.io/paketo-buildpacks/nginx@sha256:f30941ad9db5f62c23846667240a183ac6c95ff20bccf411ac297264fcf578c5' \
+     > templated-bundle/config/dependencies.yaml
+   kbld -f templated-bundle/config --imgpkg-lock-output templated-bundle/.imgpkg/images.yml
    ```
-2. Create package dir
+   
+2. Push bundle image
+   
+   ```bash
+   imgpkg push -b <repo> -f templated-bundle --lock-output pushed_bundle.lock
+   ```
+   
+3. Copy image reference from pushed_bundle.lock and use it to template package
 
    ```bash
-   mkdir -p /tmp/package
-   mkdir -p /tmp/package/.imgpkg
-   ```
-   
-3. Assemble package
-   
-   ```bash
-   cp -r config /tmp/package
-   cp <values file> /tmp/package/config
-   kbld -f <values file> --imgpkg-lock-output /tmp/package/.imgpkg/images.yml 
-   ```
-   
-4. Push package image
-   
-   ```bash
-   imgpkg push -b <repo> -f /tmp/package --lock-output pushed_bundle.lock
-   ```
-   
-5. Copy image reference from pushed_bundle.lock and use it to template package
-
-   ```bash
-   ytt -f package.yaml -v bundle_image=<pushed bundle ref> -v version="0.0.0" > templated-package.yaml
+   ytt -f package -v bundle_image=<pushed bundle ref> -v version=$VERSION > templated-package.yaml
    ```
 
 ### Install the deps package
@@ -61,67 +41,16 @@
    kapp deploy -a kc -f https://github.com/vmware-tanzu/carvel-kapp-controller/releases/latest/download/release.yml
    ```
 
-1. Apply the templated package from step #5 above along with the metadata.yaml
+1. Apply the templated package from above along with the metadata.yaml
    
    ```bash
-   kapp deploy -a kpack-deps-package -f templated-package.yaml -f metadata.yaml
+   kapp deploy -a kpack-deps-package -f templated-package.yaml
    ```
-2. Create a file defining a secret containing the user provided values
+2. Install the package
    
-   ```yaml
-   ---
-   apiVersion: v1
-   kind: Secret
-   metadata:
-    name: kpack-deps-values
-    namespace: default
-   stringData:
-    values.yaml: |
-      ---
-      repository: <writeable repo for deps>
-      repsitory_secret:
-        name: <name of secret for repo>
-        namespace: <namespace of secret>
-   ```
-   or
-   ```yaml
-   ---
-   apiVersion: v1
-   kind: Secret
-   metadata:
-    name: kpack-deps-values
-    namespace: default
-   stringData:
-    values.yaml: |
-      ---
-      repository: <writeable repo for deps>
-      repsitory_username: "username"
-      repsitory_password: "password"
-   ```
-   
-3. Create a file defining the package install
-
-   ```yaml
-   ---
-   apiVersion: packaging.carvel.dev/v1alpha1
-   kind: PackageInstall
-   metadata:
-     name: kpack-deps
-     namespace: default
-   annotations:
-     kapp.k14s.io/change-rule: "delete before deleting serviceaccount"
-   spec:
-     serviceAccountName: <service account with admin privilege>
-     packageRef:
-       refName: kpack-dependencies.community.tanzu.vmware.com
-       versionSelection:
-         constraints: 0.0.0
-     values:
-     - secretRef:
-         name: kpack-deps-values
-   ```
-4. Deploy the secret and package install
-
    ```bash
-   kapp deploy -a kpack-deps-install -f <values secret file> -f <package install file>
+   tanzu package installed create kpack-dependencies \
+     --package-name kpack-dependencies.community.tanzu.vmware.com \
+     --version $VERSION \
+     --values-file=<(echo "repository: <repo>")
    ```

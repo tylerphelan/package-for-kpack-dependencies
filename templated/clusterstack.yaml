@@ -1,0 +1,24 @@
+#@ load("@ytt:data", "data")
+
+---
+apiVersion: kpack.io/v1alpha2
+kind: ClusterStack
+metadata:
+  name: base
+spec:
+  id: "io.buildpacks.stacks.bionic"
+  buildImage:
+    image: #@ data.values.base_build_image
+  runImage:
+    image: #@ data.values.base_run_image
+---
+apiVersion: kpack.io/v1alpha2
+kind: ClusterStack
+metadata:
+  name: default
+spec:
+  id: "io.buildpacks.stacks.bionic"
+  buildImage:
+    image: #@ data.values.base_build_image
+  runImage:
+    image: #@ data.values.base_run_image

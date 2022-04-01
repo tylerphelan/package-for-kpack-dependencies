@@ -1,0 +1,64 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: kpack.io/v1alpha2
+kind: ClusterBuilder
+metadata:
+  name: base
+spec:
+  serviceAccountRef:
+    name: kp-default-repository-serviceaccount
+    namespace: kpack
+  tag: #@ "{}:clusterbuilder-{}".format(data.values.repository, "base")
+  stack:
+    name: base
+    kind: ClusterStack
+  store:
+    name: default
+    kind: ClusterStore
+  order:
+    - group:
+        - id: paketo-buildpacks/dotnet-core
+    - group:
+        - id: paketo-buildpacks/nodejs
+    - group:
+        - id: paketo-buildpacks/go
+    - group:
+        - id: paketo-buildpacks/python
+    - group:
+        - id: paketo-buildpacks/nginx
+    - group:
+        - id: paketo-buildpacks/java-native-image
+    - group:
+        - id: paketo-buildpacks/java
+
+---
+apiVersion: kpack.io/v1alpha2
+kind: ClusterBuilder
+metadata:
+  name: default
+spec:
+  serviceAccountRef:
+    name: kp-default-repository-serviceaccount
+    namespace: kpack
+  tag: #@ "{}:clusterbuilder-{}".format(data.values.repository, "default")
+  stack:
+    name: base
+    kind: ClusterStack
+  store:
+    name: default
+    kind: ClusterStore
+  order:
+    - group:
+        - id: paketo-buildpacks/dotnet-core
+    - group:
+        - id: paketo-buildpacks/nodejs
+    - group:
+        - id: paketo-buildpacks/go
+    - group:
+        - id: paketo-buildpacks/python
+    - group:
+        - id: paketo-buildpacks/nginx
+    - group:
+        - id: paketo-buildpacks/java-native-image
+    - group:
+        - id: paketo-buildpacks/java

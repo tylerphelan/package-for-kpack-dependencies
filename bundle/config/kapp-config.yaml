@@ -8,9 +8,6 @@ waitRules:
   - supportsObservedGeneration: true
     conditionMatchers:
       - type: Ready
-        status: "False"
-        failure: true
-      - type: Ready
         status: "True"
         success: true
     resourceMatchers:

@@ -6,4 +6,6 @@ kind: ClusterStore
 metadata:
   name: default
 spec:
-  sources: #@ data.values.store_images
+  sources:
+  #@ for/end image in data.values.store_images:
+    - image: #@ image

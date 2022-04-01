@@ -1,0 +1,9 @@
+#! Copyright 2021 VMware, Inc.
+#! SPDX-License-Identifier: Apache-2.0
+
+#@data/values-schema
+---
+store_images:
+  - ""
+base_run_image: ""
+base_build_image: ""
